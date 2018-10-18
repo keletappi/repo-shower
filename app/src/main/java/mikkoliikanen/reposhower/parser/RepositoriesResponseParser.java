@@ -14,7 +14,7 @@ public class RepositoriesResponseParser {
 
     private RepositoryParser repositoryParser;
 
-    RepositoriesResponseParser(RepositoryParser parser) {
+    public RepositoriesResponseParser(RepositoryParser parser) {
         this.repositoryParser = parser;
     }
 

@@ -8,6 +8,7 @@ import android.widget.ListView;
 
 import java.util.List;
 
+import mikkoliikanen.reposhower.loader.RepositoriesFromCloudLoader;
 import mikkoliikanen.reposhower.model.Repository;
 import mikkoliikanen.reposhower.view.RepositoryListAdapter;
 
@@ -35,7 +36,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
         final LoaderManager loaderManager = getLoaderManager();
         final Loader<List<Repository>> loader = loaderManager.getLoader(LOADER_REPOS_FROM_CLOUD);
         Bundle args = new Bundle();
-        args.putString(ARG_NAME, USERNAME);
+        args.putString(ARG_NAME, username);
         if (loader == null) {
             loaderManager.initLoader(LOADER_REPOS_FROM_CLOUD, args, this);
         } else {
