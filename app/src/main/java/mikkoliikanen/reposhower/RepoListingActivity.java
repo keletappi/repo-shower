@@ -27,7 +27,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     private static final String TAG = "RepoListingActivity";
 
-    private static final String USERNAME = "keletappi";
+    private static final String USERNAME = "mralexgray";
 
     private static final int LOADER_REPOS_FROM_CLOUD = 1;
     private static final int LOADER_COMMITS_FROM_CLOUD = 2;
