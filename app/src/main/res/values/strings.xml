@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Repo Shower</string>
+    <string name="subtitle_language">Language:</string>
+    <string name="subtitle_created">Created:</string>
+    <string name="subtitle_lastpush">Last push:</string>
+    <string name="subtitle_license">License:</string>
+    <string name="no_description">No description</string>
+    <string name="no_language">Undefined</string>
+    <string name="no_license">Undefined</string>
+    <string name="never">Never</string>
 </resources>

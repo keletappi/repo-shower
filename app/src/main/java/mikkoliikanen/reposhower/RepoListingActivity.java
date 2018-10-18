@@ -9,6 +9,7 @@ import android.widget.ListView;
 import java.util.List;
 
 import mikkoliikanen.reposhower.model.Repository;
+import mikkoliikanen.reposhower.view.RepositoryListAdapter;
 
 public class RepoListingActivity extends Activity implements LoaderManager.LoaderCallbacks{
 
@@ -58,11 +59,9 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     }
 
-
-
     private void onRepositoriesLoaded(List<Repository> data) {
-        // TODO: set adapter
-        // TODO: trigger
+        repoList.setAdapter(new RepositoryListAdapter(data));
+        // TODO: trigger commit loading
     }
 
 
