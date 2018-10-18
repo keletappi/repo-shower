@@ -6,6 +6,12 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.widget.ListView;
 
+import com.couchbase.lite.CouchbaseLiteException;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.DatabaseConfiguration;
+import com.couchbase.lite.LogDomain;
+import com.couchbase.lite.LogLevel;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +19,8 @@ import mikkoliikanen.reposhower.loader.CommitsFromCloudLoader;
 import mikkoliikanen.reposhower.loader.RepositoriesFromCloudLoader;
 import mikkoliikanen.reposhower.model.Commit;
 import mikkoliikanen.reposhower.model.Repository;
+import mikkoliikanen.reposhower.storage.RepositoryConverter;
+import mikkoliikanen.reposhower.storage.RepositoryStorage;
 import mikkoliikanen.reposhower.view.RepositoryListAdapter;
 
 public class RepoListingActivity extends Activity implements LoaderManager.LoaderCallbacks{
@@ -30,9 +38,21 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     private ListView repoList;
 
+    private RepositoryStorage repositoryStorage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try {
+            DatabaseConfiguration config = new DatabaseConfiguration(getApplicationContext());
+            Database database = new Database("mydb", config);
+            Database.setLogLevel(LogDomain.REPLICATOR, LogLevel.VERBOSE);
+            Database.setLogLevel(LogDomain.QUERY, LogLevel.VERBOSE);
+            repositoryStorage = new RepositoryStorage(database, new RepositoryConverter());
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
 
         setContentView(R.layout.activity_repo_listing);
         repoList = findViewById(R.id.repo_list);
@@ -77,7 +97,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
     public Loader onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_REPOS_FROM_CLOUD:
-                return new RepositoriesFromCloudLoader(this, args.getString(ARG_NAME));
+                return new RepositoriesFromCloudLoader(this, args.getString(ARG_NAME), repositoryStorage);
             case LOADER_COMMITS_FROM_CLOUD:
                 final String[] usernames = args.getStringArray(ARG_USERNAMES);
                 final String[] repositories = args.getStringArray(ARG_REPOSITORIES);
@@ -111,7 +131,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     private void onRepositoriesLoaded(List<Repository> data) {
         repoList.setAdapter(new RepositoryListAdapter(data));
-        loadCommitsFromCloud(data);
+        // loadCommitsFromCloud(data);
     }
 
     private void onCommitsLoaded(Map<String, Commit> data) {
