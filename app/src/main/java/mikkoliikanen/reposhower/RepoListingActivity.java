@@ -31,6 +31,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     private static final int LOADER_REPOS_FROM_CLOUD = 1;
     private static final int LOADER_COMMITS_FROM_CLOUD = 2;
+    private static final int LOADER_REPOS_FROM_DB = 3;
 
     private static final String ARG_NAME = "name";
     private static final String ARG_USERNAMES = "usernames";
@@ -57,6 +58,7 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
         setContentView(R.layout.activity_repo_listing);
         repoList = findViewById(R.id.repo_list);
 
+        loadRepositoriesFromDb(USERNAME);
         loadRepositoriesFromCloud(USERNAME);
     }
 
@@ -71,6 +73,20 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
             loaderManager.restartLoader(LOADER_REPOS_FROM_CLOUD, args, this);
         }
     }
+
+    private void loadRepositoriesFromDb(String username) {
+        final LoaderManager loaderManager = getLoaderManager();
+        final Loader<List<Repository>> loader = loaderManager.getLoader(LOADER_REPOS_FROM_DB);
+        Bundle args = new Bundle();
+        args.putString(ARG_NAME, username);
+        if (loader == null) {
+            loaderManager.initLoader(LOADER_REPOS_FROM_DB, args, this);
+        } else {
+            loaderManager.restartLoader(LOADER_REPOS_FROM_DB, args, this);
+        }
+    }
+
+
 
     private void loadCommitsFromCloud(List<Repository> data) {
         final LoaderManager loaderManager = getLoaderManager();
@@ -106,6 +122,8 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
                     params[i] = new CommitsFromCloudLoader.Param(repositories[i], usernames[i]);
                 }
                 return new CommitsFromCloudLoader(this, params);
+            case LOADER_REPOS_FROM_DB:
+                return new RepositoriesFromDbLoader(this, args.getString(ARG_NAME), repositoryStorage);
         }
         throw new RuntimeException("onCreateLoader - Unknown loader ID " + id);
     }
@@ -115,10 +133,13 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
         final int id = loader.getId();
         switch (id) {
             case LOADER_REPOS_FROM_CLOUD:
-                onRepositoriesLoaded((List<Repository>) data);
+                onRepositoryStorageChanged();
                 return;
             case LOADER_COMMITS_FROM_CLOUD:
                 onCommitsLoaded((Map<String, Commit>) data);
+                return;
+            case LOADER_REPOS_FROM_DB:
+                onRepositoriesLoaded((List<Repository>) data);
                 return;
         }
         throw new RuntimeException("onLoadFinished - Unknown loader ID " + id);
@@ -129,9 +150,14 @@ public class RepoListingActivity extends Activity implements LoaderManager.Loade
 
     }
 
+    private void onRepositoryStorageChanged() {
+        loadRepositoriesFromDb(USERNAME);
+    }
+
     private void onRepositoriesLoaded(List<Repository> data) {
+        RepositoryListAdapter adapter = (RepositoryListAdapter) repoList.getAdapter();
         repoList.setAdapter(new RepositoryListAdapter(data));
-        // loadCommitsFromCloud(data);
+        loadCommitsFromCloud(data);
     }
 
     private void onCommitsLoaded(Map<String, Commit> data) {
