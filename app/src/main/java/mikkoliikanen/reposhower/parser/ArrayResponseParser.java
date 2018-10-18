@@ -8,18 +8,16 @@ import org.json.JSONTokener;
 import java.util.ArrayList;
 import java.util.List;
 
-import mikkoliikanen.reposhower.model.Repository;
+public class ArrayResponseParser<T> {
 
-public class RepositoriesResponseParser {
+    private ResponseParser<T> repositoryParser;
 
-    private RepositoryParser repositoryParser;
-
-    public RepositoriesResponseParser(RepositoryParser parser) {
+    public ArrayResponseParser(ResponseParser<T> parser) {
         this.repositoryParser = parser;
     }
 
-    public List<Repository> parse(String apiResponse) throws JSONException {
-        List<Repository> result = new ArrayList<>();
+    public List<T> parse(String apiResponse) throws JSONException {
+        List<T> result = new ArrayList<>();
         JSONArray response = (JSONArray) new JSONTokener(apiResponse).nextValue();
         for (int i=0 ; i < response.length() ; i++) {
             result.add(repositoryParser.parse((JSONObject) response.get(i)));

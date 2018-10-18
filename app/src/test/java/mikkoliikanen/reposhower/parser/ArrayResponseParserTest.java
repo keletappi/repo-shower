@@ -1,7 +1,6 @@
 package mikkoliikanen.reposhower.parser;
 
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class RepositoriesResponseParserTest {
+public class ArrayResponseParserTest {
 
 
     private static final String TEST_JSON = "[" +
@@ -32,30 +31,30 @@ public class RepositoriesResponseParserTest {
             "]";
 
     @Mock
-    private RepositoryParser mockRepositoryParser;
+    private ResponseParser mockResponseParser;
     @Mock
-    private Repository mockRepo1;
+    private Object object1;
     @Mock
-    private Repository mockRepo2;
+    private Object object2;
     @Mock
-    private Repository mockRepo3;
+    private Object object3;
 
     @InjectMocks
-    RepositoriesResponseParser testParser;
+    ArrayResponseParser testParser;
 
     @Before
     public void setUp() throws Exception {
         org.mockito.MockitoAnnotations.initMocks(this);
 
-        when(mockRepositoryParser.parse(any(JSONObject.class)))
-                .thenReturn(mockRepo1, mockRepo2, mockRepo3);
+        when(mockResponseParser.parse(any(JSONObject.class)))
+                .thenReturn(object1, object2, object3);
     }
 
     @Test
     public void testParse() throws Exception {
         List<Repository> result = testParser.parse(TEST_JSON);
-        assertThat(result, contains(mockRepo1, mockRepo2, mockRepo3));
-        verify(mockRepositoryParser, times(3)).parse(any(JSONObject.class));
-        verifyNoMoreInteractions(mockRepositoryParser);
+        assertThat(result, contains(object1, object2, object3));
+        verify(mockResponseParser, times(3)).parse(any(JSONObject.class));
+        verifyNoMoreInteractions(mockResponseParser);
     }
 }

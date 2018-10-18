@@ -8,4 +8,6 @@
     <string name="no_language">Undefined</string>
     <string name="no_license">Undefined</string>
     <string name="never">Never</string>
+    <string name="most_recent_commit">Most recent commit</string>
+    <string name="loading_commit">Loading commit...</string>
 </resources>

@@ -7,7 +7,7 @@ import java.util.Date;
 
 import mikkoliikanen.reposhower.model.Repository;
 
-public class RepositoryParser {
+public class RepositoryParser implements ResponseParser<Repository> {
 
     public Repository parse(JSONObject repositoryObject) throws JSONException {
 

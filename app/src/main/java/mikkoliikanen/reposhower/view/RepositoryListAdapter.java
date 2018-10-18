@@ -6,12 +6,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import java.util.List;
+import java.util.Map;
 
 import mikkoliikanen.reposhower.R;
+import mikkoliikanen.reposhower.model.Commit;
 import mikkoliikanen.reposhower.model.Repository;
 
 public class RepositoryListAdapter extends BaseAdapter {
     private final List<Repository> repositories;
+    private Map<String, Commit> commits;
 
     public RepositoryListAdapter(List<Repository> repositories) {
         this.repositories = repositories;
@@ -42,7 +45,14 @@ public class RepositoryListAdapter extends BaseAdapter {
             convertView.setTag(presenter);
         }
 
-        ((RepositoryPresenter) convertView.getTag()).present((Repository) getItem(position));
+        final Repository repository = (Repository) getItem(position);
+        final Commit commit = commits != null ? commits.get(repository.getName()) : null;
+        ((RepositoryPresenter) convertView.getTag()).present(repository, commit);
         return convertView;
+    }
+
+    public void setCommits(Map<String, Commit> commits) {
+        this.commits = commits;
+        notifyDataSetChanged();
     }
 }
